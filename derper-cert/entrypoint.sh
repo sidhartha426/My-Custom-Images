@@ -1,24 +1,31 @@
 #!/bin/sh
-set -e
 
 if [ -z "$DERP_DOMAIN" ] || [ -z "$TARGET_SERVICE" ]; then
-    echo "[Watcher] ERROR: Missing required environment variables."
+    echo "[Watcher] ERROR: Missing required environment variables." >&2
     exit 1
 fi
 
-# Point directly to Caddy's default Let's Encrypt storage folder for this domain
-# (If using ZeroSSL or an internal CA, adjust the issuer folder accordingly)
 EXACT_CERT_DIR="/caddy_data/caddy/certificates/acme-v02.api.letsencrypt.org-directory/${DERP_DOMAIN}"
 
+# Guard clause to wait for Caddy provisioning
+while [ ! -d "$EXACT_CERT_DIR" ]; do
+    echo "[Watcher] Directory $EXACT_CERT_DIR not found. Waiting for Caddy..."
+    sleep 5
+done
 
 echo "[Watcher] Monitoring exact path: $EXACT_CERT_DIR"
 
-# Watch specifically for changes to the exact certificate file
-while inotifywait -e close_write --format '%file' "$EXACT_CERT_DIR" | grep -q "$DERP_DOMAIN.crt"; do
-    echo "[Watcher] Certificate renewal detected for $DERP_DOMAIN!"
-    echo "[Watcher] Restarting container for service: $TARGET_SERVICE..."
-    
-    docker restart "$TARGET_SERVICE"
-    
-    echo "[Watcher] Restart command sent. Resuming watch..."
+# Because of `tini -g`, we can safely use the standard pipe without creating unkillable ghosts.
+# When Docker stops, tini blasts the whole pipeline with SIGTERM.
+inotifywait -m -q -e close_write --format '%f' "$EXACT_CERT_DIR" | \
+while read -r filename; do
+    if [ "$filename" = "${DERP_DOMAIN}.crt" ]; then
+        echo "[Watcher] Certificate renewal detected for $DERP_DOMAIN!"
+        
+        if docker restart "$TARGET_SERVICE"; then
+            echo "[Watcher] Restart command sent successfully."
+        else
+            echo "[Watcher] ERROR: Failed to restart $TARGET_SERVICE." >&2
+        fi
+    fi
 done
