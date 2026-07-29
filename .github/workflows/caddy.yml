@@ -44,7 +44,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           flavor: |
-            suffix=-porkbun-alpine
+            suffix=-cloudflare-alpine
           tags: |
             # The 'value' parameter feeds our stripped version tag into the semver parser
             type=semver,pattern={{version}},value=${{ steps.extract_version.outputs.version }}
