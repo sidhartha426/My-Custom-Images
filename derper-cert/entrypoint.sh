@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ -z "$DERP_DOMAIN" ] || [ -z "$TARGET_SERVICE" ]; then
+if [ -z "$DERP_DOMAIN" ] || [ -z "$TARGET_CONTAINER" ]; then
     echo "[Watcher] ERROR: Missing required environment variables." >&2
     exit 1
 fi
@@ -22,10 +22,10 @@ while read -r filename; do
     if [ "$filename" = "${DERP_DOMAIN}.crt" ]; then
         echo "[Watcher] Certificate renewal detected for $DERP_DOMAIN!"
         
-        if docker restart "$TARGET_SERVICE"; then
+        if docker restart "$TARGET_CONTAINER"; then
             echo "[Watcher] Restart command sent successfully."
         else
-            echo "[Watcher] ERROR: Failed to restart $TARGET_SERVICE." >&2
+            echo "[Watcher] ERROR: Failed to restart $TARGET_CONTAINER." >&2
         fi
     fi
 done
