@@ -36,4 +36,4 @@ WORKDIR /model
 
 # Execute the CLI with the specified arguments
 # We use the JSON array syntax (exec form) which is the recommended approach
-CMD ["mnncli", "serve", "-c", "/model/config.json"]
+CMD ["stdbuf", "-oL", "mnncli", "serve", "-c", "/model/config.json"]
