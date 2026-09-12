@@ -22,9 +22,12 @@ FROM debian:13-slim
 COPY --from=builder /tmp/mnncli /usr/local/bin/mnncli
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
+    ca-certificates tini \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /model
 
-CMD ["stdbuf", "-oL", "mnncli", "serve", "--host", "::", "--port", "8000", "-c", "/model/config.json"]
+# Install tini
+RUN apt-get update && apt-get install -y tini && rm -rf /var/lib/apt/lists/*
+
+CMD ["/usr/bin/tini", "--", "stdbuf", "-oL", "mnncli", "serve", "-v", "--host", "::", "--port", "8000", "-c", "/model/"]
