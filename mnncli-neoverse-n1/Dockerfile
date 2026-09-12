@@ -27,4 +27,4 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /model
 
-CMD ["/usr/bin/tini", "--", "stdbuf", "-oL", "mnncli", "serve", "-v", "--host", "::", "--port", "8000", "-c", "/model/"]
+CMD ["/bin/bash", "-c", "exec /usr/bin/tini -- stdbuf -oL mnncli serve -v --host :: --port 8000 -c /models/$MODEL_NAME"]
