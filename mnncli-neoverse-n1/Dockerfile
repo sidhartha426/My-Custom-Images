@@ -27,7 +27,4 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /model
 
-# Install tini
-RUN apt-get update && apt-get install -y tini && rm -rf /var/lib/apt/lists/*
-
 CMD ["/usr/bin/tini", "--", "stdbuf", "-oL", "mnncli", "serve", "-v", "--host", "::", "--port", "8000", "-c", "/model/"]
