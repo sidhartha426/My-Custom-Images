@@ -65,5 +65,4 @@ jobs:
             HEADPLANE_VERSION=${{ steps.extract_version.outputs.version }}
             IMAGE_TAG=${{ steps.extract_version.outputs.version }}
           provenance: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          no-cache: true
