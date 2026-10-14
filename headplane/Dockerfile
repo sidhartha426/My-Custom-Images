@@ -2,11 +2,11 @@ FROM --platform=$BUILDPLATFORM alpine:3.23 AS repo-fetcher
 WORKDIR /workspace
 
 RUN apk add --no-cache git
-RUN git clone --revision=b3c0c1c691c721f2f3af4b84a18afccf8d9e4a24 --depth 1 https://github.com/tale/headplane.git /workspace
+RUN git clone --revision=42dfac5a098d1b50acdc6afbf7d91ab91891c471 --depth 1 https://github.com/tale/headplane.git /workspace
 RUN sed -i 's|const origin = url\.origin;|const origin = url.origin.replace(/^http:/, "https:");|g' /workspace/app/routes/ssh/page.tsx
 
 
-FROM --platform=$BUILDPLATFORM golang:1.25.1 AS go-base
+FROM --platform=$BUILDPLATFORM golang:1.27.2 AS go-base
 WORKDIR /run
 RUN apt-get update && apt-get install -y --no-install-recommends patch && rm -rf /var/lib/apt/lists/*
 
