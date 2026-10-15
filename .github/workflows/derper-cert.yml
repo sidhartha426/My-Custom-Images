@@ -5,6 +5,11 @@ on:
     tags:
       - 'derper-cert-v*'
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag to process'
+        required: true
+        type: string
 
 env:
   REGISTRY: ghcr.io
@@ -19,13 +24,24 @@ jobs:
       packages: write
 
     steps:
+      - name: Determine Target Tag
+        id: set_tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "TARGET_TAG=${{ inputs.tag_name }}" >> $GITHUB_ENV
+          else
+            echo "TARGET_TAG=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ env.TARGET_TAG }}
 
       - name: Extract version from tag
         id: extract_version
         run: |
-          VERSION=${GITHUB_REF_NAME#${FOLDER_NAME}-}
+          VERSION=${TARGET_TAG#${FOLDER_NAME}-}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
