@@ -61,12 +61,11 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           flavor: |
-            suffix=-desec-alpine
+            latest=false
           tags: |
-            # The 'value' parameter feeds our stripped version tag into the semver parser
-            type=semver,pattern={{version}},value=${{ steps.extract_version.outputs.version }}
-            type=semver,pattern={{major}}.{{minor}},value=${{ steps.extract_version.outputs.version }}
-            type=semver,pattern={{major}},value=${{ steps.extract_version.outputs.version }}
+            type=semver,pattern={{version}}-desec-alpine,value=${{ steps.extract_version.outputs.version }}
+            type=semver,pattern={{major}}.{{minor}}-desec-alpine,value=${{ steps.extract_version.outputs.version }}
+            type=semver,pattern={{major}}-desec-alpine,value=${{ steps.extract_version.outputs.version }}
             type=raw,value=latest-desec-alpine
 
       - name: Build and push Docker image to GHCR
