@@ -49,6 +49,7 @@ jobs:
             # The 'value' parameter feeds our stripped version tag into the semver parser
             type=semver,pattern={{version}},value=${{ steps.extract_version.outputs.version }}
             type=semver,pattern={{major}}.{{minor}},value=${{ steps.extract_version.outputs.version }}
+            type=semver,pattern={{major}},value=${{ steps.extract_version.outputs.version }}
             type=raw,value=latest
 
       - name: Build and push Docker image to GHCR
