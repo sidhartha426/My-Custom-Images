@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'derper-cert-v*'
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io

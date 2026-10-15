@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'mnncli-neoverse-n1-v*'
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
